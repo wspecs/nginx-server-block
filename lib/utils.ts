@@ -22,7 +22,7 @@ export class ServerBlock {
   }
 
   createPublicFolder() {
-    const path this.getFolderName();
+    const path = this.getFolderName();
     if (!fs.existsSync(path)) {
       shell.mkdir('-p', path);
     }
@@ -52,7 +52,10 @@ export class ServerBlock {
 
   async addAvailableSite() {
     const file = `/etc/nginx/sites-available/${this.name}`;
-    await fs.writeFileSync(file, siteAvailableConfig(this.name), ENCODING);
+    if (!fs.existsSync(file)) {
+      await fs.writeFileSync(file, siteAvailableConfig(this.name), ENCODING);
+      this.addCert();
+    }
   }
 
   async create() {
@@ -61,6 +64,5 @@ export class ServerBlock {
     await this.addIndexFile();
     await this.addAvailableSite();
     this.enableSite();
-    this.addCert();
   }
 }
